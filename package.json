@@ -1,0 +1,62 @@
+{
+  "name": "p-task",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "lint": "eslint \"{src,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
+    "format": "prettier --config .prettierrc --write \"**/*.ts\"",
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.json",
+    "test": "jest --config ./test/jest.json",
+    "lint-staged": "lint-staged"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Ashish K. Poudel",
+    "email": "routeasis@gmail.com"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.9.2",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.2.0",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix"
+    ]
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "./test",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  }
+}
