@@ -1,7 +1,7 @@
 import { RetryAbortedError } from '../src/retry-aborted.error';
 import { RetryFailedError } from '../src/retry-failed.error';
 
-export class FakeTask {
+export class TaskStub {
   private _abortAfterFailedCount = 0;
 
   get abortAfterFailedCount() {
@@ -13,7 +13,7 @@ export class FakeTask {
   }
 
   async fails() {
-    throw new RetryFailedError('Task failed');
+    throw new RetryFailedError('Task retry failed.');
   }
 
   async abortAfterFailed(retries: number) {
@@ -23,6 +23,6 @@ export class FakeTask {
       throw new RetryAbortedError();
     }
 
-    throw new RetryFailedError('Task failed');
+    throw new RetryFailedError('Task retry failed.');
   }
 }

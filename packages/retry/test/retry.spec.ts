@@ -1,9 +1,9 @@
 import { retry } from '../src/retry';
-import { FakeTask } from './fake-task';
+import { TaskStub } from './task-stub';
 
-describe('Retry', () => {
+describe('Retry Task', () => {
   it('should fail after retries are completed', async () => {
-    const task = new FakeTask();
+    const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'fails');
 
     await retry(() => task.fails(), { retries: 5 });
@@ -13,7 +13,7 @@ describe('Retry', () => {
   });
 
   it('should stop retries when AbortRetryError is thrown', async () => {
-    const task = new FakeTask();
+    const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'abortAfterFailed');
 
     await retry(() => task.abortAfterFailed(3), { retries: 5 });
