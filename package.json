@@ -9,7 +9,7 @@
     "lint-all": "npm run lint --workspaces",
     "test": "npm run test",
     "test-all": "npm run test --workspaces",
-    "format": "prettier --config .prettierrc --write \"**/*.ts\"",
+    "format": "prettier --config .prettierrc --write  \"packages/**/*.{js,json,ts}\"",
     "prebuild": "rimraf packages/**/dist packages/**/*.tsbuildinfo",
     "build": "tsc -b tsconfig.build.json"
   },
