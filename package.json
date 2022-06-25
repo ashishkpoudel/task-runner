@@ -1,19 +1,14 @@
 {
-  "name": "p-task",
+  "name": "root",
   "version": "0.0.0",
   "description": "",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "/dist"
-  ],
   "scripts": {
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
     "format": "prettier --config .prettierrc --write \"**/*.ts\"",
-    "prebuild": "rimraf dist",
-    "build": "tsc -p tsconfig.json",
-    "test": "jest --config ./test/jest.json",
+    "prebuild": "rimraf packages/**/dist packages/**/*.tsbuildinfo",
+    "build": "tsc -b tsconfig.build.json",
+    "test": "npm run test --workspaces",
     "lint-staged": "lint-staged"
   },
   "keywords": [],
@@ -58,5 +53,8 @@
   },
   "dependencies": {
     "reflect-metadata": "^0.1.13"
-  }
+  },
+  "workspaces": [
+    "packages/retry"
+  ]
 }
