@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "description": "Extra helpers for promise",
+  "description": "",
   "workspaces": [
     "packages/*"
   ],
@@ -14,12 +14,8 @@
     "build": "tsc -b tsconfig.build.json"
   },
   "keywords": [],
-  "author": {
-    "name": "Ashish K. Poudel",
-    "email": "routeasis@gmail.com"
-  },
+  "author": "Ashish K. Poudel <routeasis@gmail.com>",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/node": "^16.9.2",

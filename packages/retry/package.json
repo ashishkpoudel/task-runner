@@ -1,6 +1,6 @@
 {
-  "name": "@promise-extra/retry",
-  "version": "1.0.0",
+  "name": "@task-runner/retry",
+  "version": "0.0.0",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
