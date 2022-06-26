@@ -20,7 +20,7 @@ export class TaskStub {
     this._abortAfterFailedCount++;
 
     if (this._abortAfterFailedCount === retries) {
-      throw new RetryAbortedError();
+      throw new RetryAbortedError('Task retry aborted.');
     }
 
     throw new RetryFailedError('Task retry failed.');
