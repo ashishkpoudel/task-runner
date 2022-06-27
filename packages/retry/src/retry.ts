@@ -11,7 +11,9 @@ class Retry {
   constructor(private readonly options: RetryOptions) {}
 
   private applyTimeout<T>(fn: () => Promise<T>): Promise<T> {
-    if (!this.options.timeout) { return fn() };
+    if (!this.options.timeout) {
+      return fn();
+    }
 
     return new Promise((resolve, reject) => {
       const timeoutRef = setTimeout(() => {

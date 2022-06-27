@@ -31,21 +31,19 @@ describe('Retry Task', () => {
 
   it('should result in timeout exceed when execution take longer then timeout', async () => {
     const task = new Promise((resolve) => {
-      setTimeout(() => resolve('random task..'), 15)
+      setTimeout(() => resolve('random task..'), 15);
     });
 
-    await expect(retry(() => task, { retries: 1, timeout: 14 })).rejects.toThrow(
-      RetryTimeoutError,
-    );
+    await expect(retry(() => task, { retries: 1, timeout: 14 })).rejects.toThrow(RetryTimeoutError);
   });
 
   it('should result in sucessful execution when task is resolved before timeout', async () => {
     const task = new Promise((resolve) => {
-      setTimeout(() => resolve('random task..'), 14)
+      setTimeout(() => resolve('random task..'), 14);
     });
 
-    const result = await (retry(() => task, { retries: 1, timeout: 15 }));
-    
+    const result = await retry(() => task, { retries: 1, timeout: 15 });
+
     expect(result).toEqual('random task..');
   });
 });
