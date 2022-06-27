@@ -1,6 +1,7 @@
 import { retry } from '../src/retry';
 import { RetryAbortedError } from '../src/retry-aborted.error';
 import { RetryFailedError } from '../src/retry-failed.error';
+import { RetryTimeoutError } from '../src/retry-timeout.error';
 import { TaskStub } from './task-stub';
 
 describe('Retry Task', () => {
@@ -26,5 +27,25 @@ describe('Retry Task', () => {
     expect(task.abortAfterFailedCount).toEqual(3);
 
     taskSpy.mockRestore();
+  });
+
+  it('should result in timeout exceed when execution take longer then timeout', async () => {
+    const task = new Promise((resolve) => {
+      setTimeout(() => resolve('random task..'), 15)
+    });
+
+    await expect(retry(() => task, { retries: 1, timeout: 14 })).rejects.toThrow(
+      RetryTimeoutError,
+    );
+  });
+
+  it('should result in sucessful execution when task is resolved before timeout', async () => {
+    const task = new Promise((resolve) => {
+      setTimeout(() => resolve('random task..'), 14)
+    });
+
+    const result = await (retry(() => task, { retries: 1, timeout: 15 }));
+    
+    expect(result).toEqual('random task..');
   });
 });

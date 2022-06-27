@@ -11,12 +11,12 @@ class Retry {
   constructor(private readonly options: RetryOptions) {}
 
   private applyTimeout<T>(fn: () => Promise<T>): Promise<T> {
-    const executionTimeout = this.options?.timeout ?? Infinity;
+    if (!this.options.timeout) { return fn() };
 
     return new Promise((resolve, reject) => {
       const timeoutRef = setTimeout(() => {
         reject(new RetryTimeoutError('Task retry timeout.'));
-      }, executionTimeout);
+      }, this.options.timeout);
 
       fn()
         .then((success) => {
