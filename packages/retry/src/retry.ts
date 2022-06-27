@@ -3,7 +3,7 @@ import { RetryAbortedError } from './retry-aborted.error';
 import { RetryFailedError } from './retry-failed.error';
 import { RetryTimeoutError } from './retry-timeout.error';
 
-export const retry = async (task: () => Promise<any>, options: RetryOptions) => {
+export async function retry<T>(task: () => Promise<T>, options: RetryOptions): Promise<T> {
   for (let retryCount = 1; retryCount <= options.retries; retryCount++) {
     try {
       return await task();
@@ -11,25 +11,22 @@ export const retry = async (task: () => Promise<any>, options: RetryOptions) => 
       if (error instanceof RetryAbortedError) {
         throw error;
       }
-
-      if (retryCount === options.retries) {
-        throw new RetryFailedError('Task retry failed.');
-      }
     }
   }
-};
 
-const _timeout = async (task: () => Promise<any>, timeout?: number) => {
-  const defaultTimeout = timeout ?? Infinity;
+  throw new RetryFailedError('Task retry failed.');
+}
+
+async function execute<T>(task: () => Promise<T>, timeout?: number): Promise<T> {
+  const executionTimeout = timeout ?? Infinity;
 
   return new Promise((resolve, reject) => {
     const timeoutRef = setTimeout(() => {
       reject(new RetryTimeoutError('Task retry timeout.'));
-    }, defaultTimeout);
+    }, executionTimeout);
 
     task()
-      .then((result) => resolve(result))
+      .then((success) => { clearTimeout(timeoutRef); resolve(success)})
       .catch((error) => reject(error))
-      .finally(() => clearInterval(timeoutRef));
   });
-};
+}
