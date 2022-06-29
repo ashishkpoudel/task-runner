@@ -13,7 +13,7 @@ describe('Retry Task', () => {
     const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'fails');
 
-    await expect(new Retry({ retries: 5 }).execute(() => task.fails())).rejects.toThrow(
+    await expect(new Retry({ attempts: 5 }).execute(() => task.fails())).rejects.toThrow(
       RetryFailedError
     );
 
@@ -24,9 +24,9 @@ describe('Retry Task', () => {
     const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'abortAfterFailed');
 
-    await expect(new Retry({ retries: 5 }).execute(() => task.abortAfterFailed(3))).rejects.toThrow(
-      RetryAbortedError
-    );
+    await expect(
+      new Retry({ attempts: 5 }).execute(() => task.abortAfterFailed(3))
+    ).rejects.toThrow(RetryAbortedError);
 
     expect(taskSpy).toHaveBeenCalledTimes(3);
     expect(task.abortAfterFailedCount).toEqual(3);
@@ -37,7 +37,7 @@ describe('Retry Task', () => {
       setTimeout(() => resolve('random task..'), 15);
     });
 
-    await expect(new Retry({ retries: 1, timeout: 1 }).execute(() => task)).rejects.toThrow(
+    await expect(new Retry({ attempts: 1, timeout: 1 }).execute(() => task)).rejects.toThrow(
       RetryTimeoutError
     );
   });
@@ -47,7 +47,7 @@ describe('Retry Task', () => {
       setTimeout(() => resolve('random task..'), 14);
     });
 
-    const result = await new Retry({ retries: 1, timeout: 15 }).execute(() => task);
+    const result = await new Retry({ attempts: 1, timeout: 15 }).execute(() => task);
 
     expect(result).toEqual('random task..');
   });

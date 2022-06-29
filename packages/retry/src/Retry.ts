@@ -27,7 +27,7 @@ export class Retry {
 
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     const task = async () => {
-      for (let retryCount = 1; retryCount <= this.options.retries; retryCount++) {
+      for (let attempt = 1; attempt <= this.options.attempts; attempt++) {
         try {
           return await fn();
         } catch (error) {
