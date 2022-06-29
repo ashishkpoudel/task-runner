@@ -1,32 +1,35 @@
-import { retry } from '../src/retry';
-import { RetryAbortedError } from '../src/retry-aborted.error';
-import { RetryFailedError } from '../src/retry-failed.error';
-import { RetryTimeoutError } from '../src/retry-timeout.error';
-import { TaskStub } from './task-stub';
+import { Retry } from '../src/Retry';
+import { RetryAbortedError } from '../src/RetryAbortedError';
+import { RetryFailedError } from '../src/RetryFailedError';
+import { RetryTimeoutError } from '../src/RetryTimeoutError';
+import { TaskStub } from './TaskStub';
 
 describe('Retry Task', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should fail after retries are completed', async () => {
     const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'fails');
 
-    await expect(retry(() => task.fails(), { retries: 5 })).rejects.toThrow(RetryFailedError);
+    await expect(new Retry({ retries: 5 }).execute(() => task.fails())).rejects.toThrow(
+      RetryFailedError
+    );
 
     expect(taskSpy).toHaveBeenCalledTimes(5);
-    taskSpy.mockRestore();
   });
 
   it('should stop retries when AbortRetryError is thrown', async () => {
     const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'abortAfterFailed');
 
-    await expect(retry(() => task.abortAfterFailed(3), { retries: 5 })).rejects.toThrow(
+    await expect(new Retry({ retries: 5 }).execute(() => task.abortAfterFailed(3))).rejects.toThrow(
       RetryAbortedError
     );
 
     expect(taskSpy).toHaveBeenCalledTimes(3);
     expect(task.abortAfterFailedCount).toEqual(3);
-
-    taskSpy.mockRestore();
   });
 
   it('should result in timeout exceed when execution take longer then timeout', async () => {
@@ -34,7 +37,9 @@ describe('Retry Task', () => {
       setTimeout(() => resolve('random task..'), 15);
     });
 
-    await expect(retry(() => task, { retries: 1, timeout: 14 })).rejects.toThrow(RetryTimeoutError);
+    await expect(new Retry({ retries: 1, timeout: 1 }).execute(() => task)).rejects.toThrow(
+      RetryTimeoutError
+    );
   });
 
   it('should result in sucessful execution when task is resolved before timeout', async () => {
@@ -42,7 +47,7 @@ describe('Retry Task', () => {
       setTimeout(() => resolve('random task..'), 14);
     });
 
-    const result = await retry(() => task, { retries: 1, timeout: 15 });
+    const result = await new Retry({ retries: 1, timeout: 15 }).execute(() => task);
 
     expect(result).toEqual('random task..');
   });

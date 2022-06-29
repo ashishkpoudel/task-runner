@@ -1,13 +1,9 @@
 import { RetryOptions } from './types';
-import { RetryAbortedError } from './retry-aborted.error';
-import { RetryFailedError } from './retry-failed.error';
-import { RetryTimeoutError } from './retry-timeout.error';
+import { RetryAbortedError } from './RetryAbortedError';
+import { RetryFailedError } from './RetryFailedError';
+import { RetryTimeoutError } from './RetryTimeoutError';
 
-/**
- * Decide later: oop or functional
- */
-
-class Retry {
+export class Retry {
   constructor(private readonly options: RetryOptions) {}
 
   private applyTimeout<T>(fn: () => Promise<T>): Promise<T> {
@@ -46,8 +42,4 @@ class Retry {
 
     return this.applyTimeout(task);
   }
-}
-
-export async function retry<T>(fn: () => Promise<T>, options: RetryOptions): Promise<T> {
-  return new Retry(options).execute<T>(fn);
 }
