@@ -1,4 +1,4 @@
 export interface RetryOptions {
-  readonly retries: number;
+  readonly attempts: number;
   readonly timeout?: number;
 }

@@ -1,5 +1,5 @@
-import { RetryAbortedError } from '../src/retry-aborted.error';
-import { RetryFailedError } from '../src/retry-failed.error';
+import { RetryAbortedError } from '../src/RetryAbortedError';
+import { RetryFailedError } from '../src/RetryFailedError';
 
 export class TaskStub {
   private _abortAfterFailedCount = 0;
