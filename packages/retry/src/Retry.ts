@@ -25,6 +25,12 @@ export class Retry {
     });
   }
 
+  private delay(value: number) {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(undefined), value);
+    });
+  }
+
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     const task = async () => {
       for (let attempt = 1; attempt <= this.options.attempts; attempt++) {
@@ -34,6 +40,8 @@ export class Retry {
           if (error instanceof RetryAbortedError) {
             throw error;
           }
+
+          await this.delay(this.options?.delay || 100);
         }
       }
 
