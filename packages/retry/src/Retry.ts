@@ -1,45 +1,41 @@
 import { RetryOptions } from './types';
+import { Delay } from './operations/Delay';
+import { Timeout } from './operations/Timeout';
 import { RetryAbortedError } from './RetryAbortedError';
 import { RetryFailedError } from './RetryFailedError';
-import { RetryTimeoutError } from './RetryTimeoutError';
 
 export class Retry {
   constructor(private readonly options: RetryOptions) {}
 
-  private applyTimeout<T>(fn: () => Promise<T>): Promise<T> {
-    if (!this.options.timeout) {
-      return fn();
-    }
+  private get timeout() {
+    return this.options?.timeout || 0;
+  }
 
-    return new Promise((resolve, reject) => {
-      const timeoutRef = setTimeout(() => {
-        reject(new RetryTimeoutError('Task retry timeout.'));
-      }, this.options.timeout);
+  private get delay() {
+    return this.options?.delay || 100;
+  }
 
-      fn()
-        .then((success) => {
-          clearTimeout(timeoutRef);
-          resolve(success);
-        })
-        .catch((error) => reject(error));
-    });
+  private get attempts() {
+    return this.options.attempts;
   }
 
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     const task = async () => {
-      for (let attempt = 1; attempt <= this.options.attempts; attempt++) {
+      for (let attempt = 1; attempt <= this.attempts; attempt++) {
         try {
           return await fn();
         } catch (error) {
           if (error instanceof RetryAbortedError) {
             throw error;
           }
+
+          await new Delay(this.delay, attempt, this.attempts).apply();
         }
       }
 
       throw new RetryFailedError('Task retry failed.');
     };
 
-    return this.applyTimeout(task);
+    return new Timeout(this.timeout).apply(task);
   }
 }
