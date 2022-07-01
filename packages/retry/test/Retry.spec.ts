@@ -5,7 +5,7 @@ import { RetryTimeoutError } from '../src/RetryTimeoutError';
 import { TaskStub } from './TaskStub';
 
 describe('Retry Task', () => {
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -50,5 +50,28 @@ describe('Retry Task', () => {
     const result = await new Retry({ attempts: 1, timeout: 15 }).execute(() => task);
 
     expect(result).toEqual('random task..');
+  });
+
+  it('should have default of 100ms delay between retries', async () => {
+    const task = new TaskStub();
+    const timeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    await expect(new Retry({ attempts: 2 }).execute(() => task.fails())).rejects.toThrow(
+      RetryFailedError
+    );
+
+    expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 100);
+  });
+
+  it('should have appropriate delay between retries based on retry config', async () => {
+    const task = new TaskStub();
+    const timeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    await expect(
+      new Retry({ attempts: 3, delay: 300 }).execute(() => task.fails())
+    ).rejects.toThrow(RetryFailedError);
+
+    expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 300);
+    expect(timeoutSpy).toHaveBeenNthCalledWith(2, expect.any(Function), 300);
   });
 });
