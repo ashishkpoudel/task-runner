@@ -1,7 +1,8 @@
 import { RetryOptions } from './types';
-import { delay } from './utils/delay';
+import { waitFor } from './utils/wait-for';
 import { applyTimeout } from './utils/applyTimeout';
 import { isRetryable } from './utils/isRetryable';
+import { resolveBackoffDuration } from './utils/backoff';
 import { RetryAbortedError } from './RetryAbortedError';
 import { RetryFailedError } from './RetryFailedError';
 
@@ -13,7 +14,7 @@ export class Retry {
   }
 
   private get _delay() {
-    return this.options?.delay || 1000;
+    return this.options?.delay || 100;
   }
 
   private get _attempts() {
@@ -25,7 +26,7 @@ export class Retry {
   }
 
   private get _maxBackoff() {
-    return this.options?.maxBackOff || (32 * 1000);
+    return this.options?.maxBackOff || 32 * 1000;
   }
 
   async retry<T>(fn: () => Promise<T>): Promise<T> {
@@ -39,11 +40,7 @@ export class Retry {
           }
 
           if (isRetryable(attempt, this._attempts)) {
-            await delay({
-              delay: this._delay,
-              currentAttempt: attempt,
-              maxAttempts: this._attempts,
-            });
+            await waitFor(resolveBackoffDuration(this._backoff)(attempt, this._delay, this._maxBackoff));
           }
         }
       }
@@ -51,6 +48,6 @@ export class Retry {
       throw new RetryFailedError('Task retry failed.');
     };
 
-    return applyTimeout(task, { timeout: this._timeout });
+    return applyTimeout(task, this._timeout);
   }
 }
