@@ -1,6 +1,7 @@
 import { RetryOptions } from './types';
-import { delay } from './operations/delay';
-import { applyTimeout } from './operations/applyTimeout';
+import { delay } from './utils/delay';
+import { applyTimeout } from './utils/applyTimeout';
+import { isRetryable } from './utils/isRetryable';
 import { RetryAbortedError } from './RetryAbortedError';
 import { RetryFailedError } from './RetryFailedError';
 
@@ -29,11 +30,13 @@ export class Retry {
             throw error;
           }
 
-          await delay({
-            delay: this._delay,
-            currentAttempt: attempt,
-            maxAttempts: this._attempts,
-          });
+          if (isRetryable(attempt, this._attempts)) {
+            await delay({
+              delay: this._delay,
+              currentAttempt: attempt,
+              maxAttempts: this._attempts,
+            });
+          }
         }
       }
 

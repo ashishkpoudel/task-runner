@@ -1,8 +1,8 @@
-import { Retry } from '../src/Retry';
-import { RetryAbortedError } from '../src/RetryAbortedError';
-import { RetryFailedError } from '../src/RetryFailedError';
-import { RetryTimeoutError } from '../src/RetryTimeoutError';
-import { TaskStub } from './TaskStub';
+import { Retry } from './Retry';
+import { RetryAbortedError } from './RetryAbortedError';
+import { RetryFailedError } from './RetryFailedError';
+import { RetryTimeoutError } from './RetryTimeoutError';
+import { TaskStub } from '../test/TaskStub';
 
 describe('Retry Task', () => {
   afterEach(() => {
