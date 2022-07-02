@@ -13,11 +13,19 @@ export class Retry {
   }
 
   private get _delay() {
-    return this.options?.delay || 100;
+    return this.options?.delay || 1000;
   }
 
   private get _attempts() {
     return this.options.attempts;
+  }
+
+  private get _backoff() {
+    return this.options?.backoff || 'fixed';
+  }
+
+  private get _maxBackoff() {
+    return this.options?.maxBackOff || (32 * 1000);
   }
 
   async retry<T>(fn: () => Promise<T>): Promise<T> {
