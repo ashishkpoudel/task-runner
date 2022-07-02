@@ -1,5 +1,5 @@
 import { RetryOptions } from './types';
-import { waitFor } from './utils/wait-for';
+import { waitFor } from './utils/waitFor';
 import { applyTimeout } from './utils/applyTimeout';
 import { isRetryable } from './utils/isRetryable';
 import { resolveBackoffDuration } from './utils/backoff';
