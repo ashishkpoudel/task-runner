@@ -1,4 +1,4 @@
-import { resolveBackoffDuration } from './backoff';
+import { fixedBackoff, linearBackoff, exponentialBackoff } from './backoff';
 
 describe('Backoff', () => {
   it.each([
@@ -7,7 +7,7 @@ describe('Backoff', () => {
     [3, 600],
   ])('should return appropriate fixedBackoff duration', (attempt, delay) => {
     const maxBackoff = 3000;
-    expect(resolveBackoffDuration('fixed')(attempt, delay, maxBackoff)).toEqual(delay);
+    expect(fixedBackoff(delay, maxBackoff)(attempt)).toEqual(delay);
   });
 
   it.each([
@@ -17,7 +17,7 @@ describe('Backoff', () => {
     [4, 1000, 3000],
   ])('should return appropriate linearBackoff duration', (attempt, delay, backoffDuration) => {
     const maxBackoff = 3000;
-    expect(resolveBackoffDuration('linear')(attempt, delay, maxBackoff)).toEqual(backoffDuration);
+    expect(linearBackoff(delay, maxBackoff)(attempt)).toEqual(backoffDuration);
   });
 
   it.each([
@@ -27,6 +27,6 @@ describe('Backoff', () => {
     [4, 10, 3000],
   ])('should return appropriate exponentialBackoff duration', (attempt, delay, backoffDuration) => {
     const maxBackoff = 3000;
-    expect(resolveBackoffDuration('exponential')(attempt, delay, maxBackoff)).toEqual(backoffDuration);
+    expect(exponentialBackoff(delay, maxBackoff)(attempt)).toEqual(backoffDuration);
   });
 });

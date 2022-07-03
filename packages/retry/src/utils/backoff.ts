@@ -1,25 +1,17 @@
-const fixedBackoff = (delay: number) => {
-  return delay;
+export const fixedBackoff = (delay: number, maxBackoff: number) => {
+  return (attempt: number) => {
+    return Math.min(delay + attempt * 0, maxBackoff);
+  };
 };
 
-const linearBackoff = (attempt: number, delay: number) => {
-  return attempt * delay;
+export const linearBackoff = (delay: number, maxBackoff: number) => {
+  return (attempt: number) => {
+    return Math.min(attempt * delay, maxBackoff);
+  };
 };
 
-const exponentialBackoff = (attempt: number, delay: number) => {
-  return Math.pow(delay, attempt);
-};
-
-export const resolveBackoffDuration = (strategy: string) => {
-  return (attempt: number, delay: number, maxBackoff: number) => {
-    const backoff = {
-      'fixed': fixedBackoff(delay),
-      'linear': linearBackoff(attempt, delay),
-      'exponential': exponentialBackoff(attempt, delay),
-    }[strategy];
-
-    if (!backoff) throw new Error('Invalid backoff strategy');
-
-    return Math.min(backoff, maxBackoff);
+export const exponentialBackoff = (delay: number, maxBackoff: number) => {
+  return (attempt: number) => {
+    return Math.min(Math.pow(delay, attempt), maxBackoff);
   };
 };
