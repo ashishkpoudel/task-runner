@@ -6,7 +6,11 @@ import { fixedBackoff } from './utils/backoff';
 import { RetryAbortedError } from './RetryAbortedError';
 import { RetryFailedError } from './RetryFailedError';
 
-export class Retry {
+export const retry: <T>(fn: () => Promise<T>, options: RetryOptions) => Promise<T> = (fn, options) => {
+  return new Retry(options).retry(fn);
+};
+
+class Retry {
   constructor(private readonly options: RetryOptions) {}
 
   private get _timeout() {
