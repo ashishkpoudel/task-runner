@@ -1,4 +1,5 @@
-import { Retry } from './Retry';
+import { retry } from './Retry';
+import { fixedBackoff, linearBackoff, exponentialBackoff } from './utils/backoff';
 import { RetryAbortedError } from './RetryAbortedError';
 import { RetryFailedError } from './RetryFailedError';
 import { RetryTimeoutError } from './RetryTimeoutError';
@@ -13,7 +14,7 @@ describe('Retry Task', () => {
     const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'fails');
 
-    await expect(new Retry({ attempts: 5 }).retry(() => task.fails())).rejects.toThrow(RetryFailedError);
+    await expect(retry(() => task.fails(), { attempts: 5 })).rejects.toThrow(RetryFailedError);
 
     expect(taskSpy).toHaveBeenCalledTimes(5);
   });
@@ -22,7 +23,7 @@ describe('Retry Task', () => {
     const task = new TaskStub();
     const taskSpy = jest.spyOn(task, 'abortAfterFailed');
 
-    await expect(new Retry({ attempts: 5 }).retry(() => task.abortAfterFailed(3))).rejects.toThrow(RetryAbortedError);
+    await expect(retry(() => task.abortAfterFailed(3), { attempts: 5 })).rejects.toThrow(RetryAbortedError);
 
     expect(taskSpy).toHaveBeenCalledTimes(3);
     expect(task.abortAfterFailedCount).toEqual(3);
@@ -33,7 +34,7 @@ describe('Retry Task', () => {
       setTimeout(() => resolve('random task..'), 15);
     });
 
-    await expect(new Retry({ attempts: 1, timeout: 1 }).retry(() => task)).rejects.toThrow(RetryTimeoutError);
+    await expect(retry(() => task, { attempts: 1, timeout: 1 })).rejects.toThrow(RetryTimeoutError);
   });
 
   it('should result in sucessful execution when task is resolved before timeout', async () => {
@@ -41,7 +42,7 @@ describe('Retry Task', () => {
       setTimeout(() => resolve('random task..'), 14);
     });
 
-    const result = await new Retry({ attempts: 1, timeout: 15 }).retry(() => task);
+    const result = await retry(() => task, { attempts: 1, timeout: 15 });
 
     expect(result).toEqual('random task..');
   });
@@ -50,18 +51,44 @@ describe('Retry Task', () => {
     const task = new TaskStub();
     const timeoutSpy = jest.spyOn(global, 'setTimeout');
 
-    await expect(new Retry({ attempts: 2 }).retry(() => task.fails())).rejects.toThrow(RetryFailedError);
+    await expect(retry(() => task.fails(), { attempts: 2 })).rejects.toThrow(RetryFailedError);
 
     expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 100);
   });
 
-  it('should have appropriate delay between retries based on retry config', async () => {
+  it('should have appropriate delay under fixedBackoff', async () => {
     const task = new TaskStub();
     const timeoutSpy = jest.spyOn(global, 'setTimeout');
 
-    await expect(new Retry({ attempts: 3, delay: 300 }).retry(() => task.fails())).rejects.toThrow(RetryFailedError);
+    await expect(retry(() => task.fails(), { attempts: 3, backoff: fixedBackoff(300, 1000) })).rejects.toThrow(
+      RetryFailedError
+    );
 
     expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 300);
     expect(timeoutSpy).toHaveBeenNthCalledWith(2, expect.any(Function), 300);
+  });
+
+  it('should have appropriate delay under linearBackoff', async () => {
+    const task = new TaskStub();
+    const timeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    await expect(retry(() => task.fails(), { attempts: 3, backoff: linearBackoff(100, 3000) })).rejects.toThrow(
+      RetryFailedError
+    );
+
+    expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 100);
+    expect(timeoutSpy).toHaveBeenNthCalledWith(2, expect.any(Function), 200);
+  });
+
+  it('should have appropriate delay under exponentialBackoff', async () => {
+    const task = new TaskStub();
+    const timeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    await expect(retry(() => task.fails(), { attempts: 3, backoff: exponentialBackoff(20, 3000) })).rejects.toThrow(
+      RetryFailedError
+    );
+
+    expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 20);
+    expect(timeoutSpy).toHaveBeenNthCalledWith(2, expect.any(Function), 400);
   });
 });

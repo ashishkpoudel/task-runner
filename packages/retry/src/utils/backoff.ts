@@ -1,25 +1,23 @@
-const fixedBackoff = (delay: number) => {
-  return delay;
+export const fixedBackoff = (delay: number, maxDelay: number) => {
+  return (attempt: number) => {
+    return Math.min(delay + attempt * 0, maxDelay);
+  };
 };
 
-const linearBackoff = (attempt: number, delay: number) => {
-  return attempt * delay;
+export const linearBackoff = (delay: number, maxDelay: number) => {
+  return (attempt: number) => {
+    return Math.min(attempt * delay, maxDelay);
+  };
 };
 
-const exponentialBackoff = (attempt: number, delay: number) => {
-  return Math.pow(delay, attempt);
+export const exponentialBackoff = (delay: number, maxDelay: number) => {
+  return (attempt: number) => {
+    return Math.min(Math.pow(delay, attempt), maxDelay);
+  };
 };
 
-export const resolveBackoffDuration = (strategy: string) => {
-  return (attempt: number, delay: number, maxBackoff: number) => {
-    const backoff = {
-      'fixed': fixedBackoff(delay),
-      'linear': linearBackoff(attempt, delay),
-      'exponential': exponentialBackoff(attempt, delay),
-    }[strategy];
-
-    if (!backoff) throw new Error('Invalid backoff strategy');
-
-    return Math.min(backoff, maxBackoff);
+export const jitteredExponentialBackoff = (delay: number, maxDelay: number) => {
+  return (attempt: number) => {
+    return Math.round(Math.random() * exponentialBackoff(delay, maxDelay)(attempt));
   };
 };
