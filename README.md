@@ -1,5 +1,22 @@
-Docs after api is somewhat stabilized..
+# task-runner (Not ready for Production use)
 
-Rapid Development..
+Library for retry, control concurrency of async operations.
 
-Retry task, control concurrency etc..
+
+## Installation
+
+```
+npm install task-runner
+```
+
+## Usage
+
+* **[retry](https://github.com/ashishkpoudel/task-runner/blob/feature/readme/docs/retry.md)** Retry async operation using timeout, back-off strategy and more
+
+## Security
+
+If you discover any security related issues, please email routeasis@gmail.com.
+
+## P.S
+
+You can find me on [twitter](https://twitter.com/ashishkpoudel)
