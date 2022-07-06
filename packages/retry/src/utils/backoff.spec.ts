@@ -11,7 +11,7 @@ describe('Backoff', () => {
     [3, 600],
   ])('should return appropriate fixedBackoff duration', (attempt, delay) => {
     const maxDelay = 3000;
-    expect(fixedBackoff(delay, maxDelay)(attempt)).toEqual(delay);
+    expect(fixedBackoff({ delay, maxDelay })(attempt)).toEqual(delay);
   });
 
   it.each([
@@ -21,7 +21,7 @@ describe('Backoff', () => {
     [4, 1000, 3000],
   ])('should return appropriate linearBackoff duration', (attempt, delay, backoffDuration) => {
     const maxDelay = 3000;
-    expect(linearBackoff(delay, maxDelay)(attempt)).toEqual(backoffDuration);
+    expect(linearBackoff({ delay, maxDelay })(attempt)).toEqual(backoffDuration);
   });
 
   it.each([
@@ -31,7 +31,7 @@ describe('Backoff', () => {
     [4, 10, 3000],
   ])('should return appropriate exponentialBackoff duration', (attempt, delay, backoffDuration) => {
     const maxDelay = 3000;
-    expect(exponentialBackoff(delay, maxDelay)(attempt)).toEqual(backoffDuration);
+    expect(exponentialBackoff({ delay, maxDelay })(attempt)).toEqual(backoffDuration);
   });
 
   it.each([
@@ -42,6 +42,6 @@ describe('Backoff', () => {
     const maxDelay = 3000;
     jest.spyOn(Math, 'random').mockReturnValue(random);
 
-    expect(jitteredExponentialBackoff(delay, maxDelay)(attempt)).toEqual(backoffDuration);
+    expect(jitteredExponentialBackoff({ delay, maxDelay })(attempt)).toEqual(backoffDuration);
   });
 });

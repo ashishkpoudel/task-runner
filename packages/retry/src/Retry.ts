@@ -22,7 +22,7 @@ class Retry {
   }
 
   private get _backoff() {
-    return this.options?.backoff || fixedBackoff(100, 32 * 1000);
+    return this.options?.backoff || fixedBackoff({ delay: 100, maxDelay: 32 * 1000 });
   }
 
   async retry<T>(fn: () => Promise<T>): Promise<T> {

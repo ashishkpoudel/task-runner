@@ -3,12 +3,6 @@
 Library for retry, control concurrency of async operations.
 
 
-## Installation
-
-```
-npm install task-runner
-```
-
 ## Usage
 
 * **[retry](https://github.com/ashishkpoudel/task-runner/blob/feature/readme/docs/retry.md)** Retry async operation using timeout, back-off strategy and more
