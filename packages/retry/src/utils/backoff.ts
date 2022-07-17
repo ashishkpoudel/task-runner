@@ -1,27 +1,17 @@
-export const fixedBackoff = (props: { delay: number; maxDelay: number }) => {
+export const fixedBackoff = (options: { delay: number; maxDelay: number }) => {
   return (attempt: number) => {
-    const { delay, maxDelay } = props;
-    return Math.min(delay + attempt * 0, maxDelay);
+    return Math.min(options.delay + attempt * 0, options.maxDelay);
   };
 };
 
-export const linearBackoff = (props: { delay: number; maxDelay: number }) => {
+export const linearBackoff = (options: { delay: number; maxDelay: number }) => {
   return (attempt: number) => {
-    const { delay, maxDelay } = props;
-    return Math.min(attempt * delay, maxDelay);
+    return Math.min(attempt * options.delay, options.maxDelay);
   };
 };
 
-export const exponentialBackoff = (props: { delay: number; maxDelay: number }) => {
+export const exponentialBackoff = (options: { delay: number; maxDelay: number }) => {
   return (attempt: number) => {
-    const { delay, maxDelay } = props;
-    return Math.min(Math.pow(delay, attempt), maxDelay);
-  };
-};
-
-export const jitteredExponentialBackoff = (props: { delay: number; maxDelay: number }) => {
-  return (attempt: number) => {
-    const { delay, maxDelay } = props;
-    return Math.round(Math.random() * exponentialBackoff({ delay, maxDelay })(attempt));
+    return Math.min(attempt === 1 ? options.delay : Math.pow(2, attempt) * options.delay);
   };
 };

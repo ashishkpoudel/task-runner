@@ -89,6 +89,6 @@ describe('Retry Task', () => {
     ).rejects.toThrow(RetryFailedError);
 
     expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 20);
-    expect(timeoutSpy).toHaveBeenNthCalledWith(2, expect.any(Function), 400);
+    expect(timeoutSpy).toHaveBeenNthCalledWith(2, expect.any(Function), 80);
   });
 });
