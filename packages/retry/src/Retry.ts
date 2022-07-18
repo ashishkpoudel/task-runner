@@ -1,4 +1,4 @@
-import { RetryOptions } from './types';
+import { RetryOptions, BackoffStrategyContext } from './types';
 import { waitFor } from './utils/waitFor';
 import { applyTimeout } from './utils/applyTimeout';
 import { isRetryable } from './utils/isRetryable';
@@ -25,6 +25,10 @@ class Retry {
     return this.options?.backoff || fixedBackoff({ delay: 100, maxDelay: 32 * 1000 });
   }
 
+  private get _jitter() {
+    return this.options?.jitter || 'none';
+  }
+
   async retry<T>(fn: () => Promise<T>): Promise<T> {
     const task = async () => {
       for (let attempt = 1; attempt <= this._attempts; attempt++) {
@@ -36,7 +40,12 @@ class Retry {
           }
 
           if (isRetryable(attempt, this._attempts)) {
-            await waitFor(this._backoff(attempt));
+            await waitFor(
+              this._backoff({
+                attempt,
+                jitter: this._jitter,
+              } as BackoffStrategyContext)
+            );
           }
         }
       }
