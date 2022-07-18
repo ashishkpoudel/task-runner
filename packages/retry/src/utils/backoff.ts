@@ -1,4 +1,4 @@
-import { BackoffStrategyContext } from '../types';
+import { BackoffStrategyContext, Jitter } from '../types';
 
 export const fixedBackoff = (options: { delay: number; maxDelay: number }) => {
   return (context: BackoffStrategyContext) => {
@@ -21,7 +21,7 @@ export const exponentialBackoff = (options: { delay: number; maxDelay: number })
   };
 };
 
-const applyJitter = (backoffDuration: number, jitter: 'full' | 'none') => {
+const applyJitter = (backoffDuration: number, jitter: Jitter) => {
   switch (jitter) {
     case 'full':
       return Math.round(Math.random() * backoffDuration);
