@@ -1,7 +1,11 @@
 export interface RetryOptions {
   readonly attempts: number;
   readonly timeout?: number;
-  readonly delay?: number;
   readonly backoff?: (...props: any[]) => number;
-  readonly maxBackOff?: number;
+  readonly jitter?: 'full' | 'none';
+}
+
+export interface BackoffStrategyContext {
+  readonly attempt: number;
+  readonly jitter: 'full' | 'none';
 }
