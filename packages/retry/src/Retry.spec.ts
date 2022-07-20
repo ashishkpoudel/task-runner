@@ -1,5 +1,5 @@
 import { retry } from './Retry';
-import { fixedBackoff, linearBackoff, exponentialBackoff } from './utils/backoff';
+import { fixedBackoffStrategy, linearBackoffStrategy, exponentialBackoffStrategy } from './utils/backoff';
 import { RetryAbortedError } from './RetryAbortedError';
 import { RetryFailedError } from './RetryFailedError';
 import { RetryTimeoutError } from './RetryTimeoutError';
@@ -61,7 +61,7 @@ describe('Retry Task', () => {
     const timeoutSpy = jest.spyOn(global, 'setTimeout');
 
     await expect(
-      retry(() => task.fails(), { attempts: 3, backoff: fixedBackoff({ delay: 300, maxDelay: 1000 }) })
+      retry(() => task.fails(), { attempts: 3, backoff: fixedBackoffStrategy({ delay: 300, maxDelay: 1000 }) })
     ).rejects.toThrow(RetryFailedError);
 
     expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 300);
@@ -73,7 +73,7 @@ describe('Retry Task', () => {
     const timeoutSpy = jest.spyOn(global, 'setTimeout');
 
     await expect(
-      retry(() => task.fails(), { attempts: 3, backoff: linearBackoff({ delay: 100, maxDelay: 3000 }) })
+      retry(() => task.fails(), { attempts: 3, backoff: linearBackoffStrategy({ delay: 100, maxDelay: 3000 }) })
     ).rejects.toThrow(RetryFailedError);
 
     expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 100);
@@ -85,7 +85,7 @@ describe('Retry Task', () => {
     const timeoutSpy = jest.spyOn(global, 'setTimeout');
 
     await expect(
-      retry(() => task.fails(), { attempts: 3, backoff: exponentialBackoff({ delay: 20, maxDelay: 3000 }) })
+      retry(() => task.fails(), { attempts: 3, backoff: exponentialBackoffStrategy({ delay: 20, maxDelay: 3000 }) })
     ).rejects.toThrow(RetryFailedError);
 
     expect(timeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 20);

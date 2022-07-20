@@ -1,4 +1,4 @@
-import { fixedBackoff, linearBackoff, exponentialBackoff } from './backoff';
+import { fixedBackoffStrategy, linearBackoffStrategy, exponentialBackoffStrategy } from './backoff';
 
 describe('Backoff', () => {
   afterEach(() => {
@@ -12,7 +12,7 @@ describe('Backoff', () => {
       [3, 600],
     ])('should return appropriate fixedBackoff duration', (attempt, delay) => {
       const maxDelay = 3000;
-      expect(fixedBackoff({ delay, maxDelay })({ attempt, jitter: 'none' })).toEqual(delay);
+      expect(fixedBackoffStrategy({ delay, maxDelay })({ attempt, jitter: 'none' })).toEqual(delay);
     });
 
     it.each([
@@ -22,7 +22,7 @@ describe('Backoff', () => {
       [4, 1000, 3000],
     ])('should return appropriate linearBackoff duration', (attempt, delay, backoffDuration) => {
       const maxDelay = 3000;
-      expect(linearBackoff({ delay, maxDelay })({ attempt, jitter: 'none' })).toEqual(backoffDuration);
+      expect(linearBackoffStrategy({ delay, maxDelay })({ attempt, jitter: 'none' })).toEqual(backoffDuration);
     });
 
     it.each([
@@ -32,7 +32,7 @@ describe('Backoff', () => {
       [4, 100, 1600],
     ])('should return appropriate exponentialBackoff duration', (attempt, delay, backoffDuration) => {
       const maxDelay = 3000;
-      expect(exponentialBackoff({ delay, maxDelay })({ attempt, jitter: 'none' })).toEqual(backoffDuration);
+      expect(exponentialBackoffStrategy({ delay, maxDelay })({ attempt, jitter: 'none' })).toEqual(backoffDuration);
     });
   });
 });
