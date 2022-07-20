@@ -5,10 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "lint": "npm run lint --if-present --workspace",
-    "lint-all": "npm run lint --workspaces",
-    "test": "npm run test --if-present --workspace",
-    "test-all": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
     "format": "prettier --config .prettierrc --write  \"packages/**/*.{js,json,ts}\"",
     "prebuild": "rimraf packages/**/dist packages/**/*.tsbuildinfo",
     "build": "tsc -b tsconfig.build.json"

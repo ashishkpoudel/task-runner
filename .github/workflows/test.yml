@@ -17,7 +17,7 @@ jobs:
       - uses: bahmutov/npm-install@v1
 
       - name: Run linter
-        run: npm run lint-all
+        run: npm run lint
 
       - name : Run test
-        run: npm run test-all
+        run: npm run test

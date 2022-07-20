@@ -2,7 +2,7 @@ import { RetryOptions, BackoffStrategyContext } from './types';
 import { waitFor } from './utils/waitFor';
 import { applyTimeout } from './utils/applyTimeout';
 import { isRetryable } from './utils/isRetryable';
-import { fixedBackoff } from './utils/backoff';
+import { fixedBackoffStrategy } from './utils/backoff';
 import { RetryAbortedError } from './RetryAbortedError';
 import { RetryFailedError } from './RetryFailedError';
 
@@ -22,7 +22,7 @@ class Retry {
   }
 
   private get _backoff() {
-    return this.options?.backoff || fixedBackoff({ delay: 100, maxDelay: 32 * 1000 });
+    return this.options?.backoff || fixedBackoffStrategy({ delay: 100, maxDelay: 32 * 1000 });
   }
 
   private get _jitter() {
